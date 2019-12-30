@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btn_start).setOnClickListener(this);
         findViewById(R.id.btn_stop).setOnClickListener(this);
         findViewById(R.id.btn_read).setOnClickListener(this);
+        findViewById(R.id.btn_write).setOnClickListener(this);
         textView = findViewById(R.id.tv_info);
     }
 
@@ -97,6 +98,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_read:
                 String data = iRfidDevice.readData(IRfidDevice.RFIDAreaEnum.USER, 0, 6);
                 textView.setText(data);
+                break;
+            case R.id.btn_write:
+                boolean res6 = iRfidDevice.writeUser("12345678");
+                Toast.makeText(this, "writeUser(\"12345678\")===" + res6, Toast.LENGTH_SHORT).show();
+                Log.d("zzc", "writeUser===" + res6);
                 break;
             default:
                 break;
