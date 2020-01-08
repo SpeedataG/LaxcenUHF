@@ -7,68 +7,97 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/btn_init"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="初始化" />
-
-    <Button
-        android:id="@+id/btn_open"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="打开设备" />
-
-    <Button
-        android:id="@+id/btn_single"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="单次扫描" />
-
-    <Button
-        android:id="@+id/btn_start"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="连续扫描" />
-
-    <Button
-        android:id="@+id/btn_stop"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="停止扫描" />
-
-    <Button
-        android:id="@+id/btn_close"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="关闭设备" />
-
-    <Button
-        android:id="@+id/btn_free"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="释放资源" />
-
-    <Button
-        android:id="@+id/btn_read"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="读卡" />
-
-    <Button
-        android:id="@+id/btn_write"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="写卡" />
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/tv_info"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingBottom="20dp">
+
+            <Button
+                android:id="@+id/btn_init"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="初始化" />
+
+            <Button
+                android:id="@+id/btn_open"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="打开设备" />
+
+            <Button
+                android:id="@+id/btn_single"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="单次扫描" />
+
+            <Button
+                android:id="@+id/btn_start"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="连续扫描" />
+
+            <Button
+                android:id="@+id/btn_stop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="停止扫描" />
+
+            <Button
+                android:id="@+id/btn_close"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="关闭设备" />
+
+            <Button
+                android:id="@+id/btn_free"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="释放资源" />
+
+            <Button
+                android:id="@+id/btn_read"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="读卡(USER区)" />
+
+            <EditText
+                android:id="@+id/et_user"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:digits="0123456789abcdefABCDEF"
+                android:hint="USER区写入内容" />
+
+            <Button
+                android:id="@+id/btn_write"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="USER区写卡" />
+
+            <EditText
+                android:id="@+id/et_power"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="写入功率(0~30)"
+                android:inputType="number" />
+
+            <Button
+                android:id="@+id/btn_power"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="设置功率" />
+
+            <TextView
+                android:id="@+id/tv_info"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
     </ScrollView>
 
 </LinearLayout>

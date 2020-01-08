@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +19,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private TextView textView;
     private IRfidDevice iRfidDevice;
+    private EditText etUserData, etPower;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +39,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btn_stop).setOnClickListener(this);
         findViewById(R.id.btn_read).setOnClickListener(this);
         findViewById(R.id.btn_write).setOnClickListener(this);
+        findViewById(R.id.btn_power).setOnClickListener(this);
         textView = findViewById(R.id.tv_info);
+        etUserData = findViewById(R.id.et_user);
+        etPower = findViewById(R.id.et_power);
     }
 
     @Override
@@ -45,31 +50,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.btn_init:
                 boolean res = iRfidDevice.init();
-                Log.d("zzc", "init()===" + res);
                 Toast.makeText(this, "init()===" + res, Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btn_open:
                 boolean res2 = iRfidDevice.open();
-                Log.d("zzc", "open()===" + res2);
                 Toast.makeText(this, "open()===" + res2, Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btn_close:
                 boolean res3 = iRfidDevice.close();
-                Log.d("zzc", "close()===" + res3);
                 Toast.makeText(this, "close()===" + res3, Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btn_free:
                 boolean res4 = iRfidDevice.free();
-                Log.d("zzc", "free()===" + res4);
                 Toast.makeText(this, "free()===" + res4, Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btn_single:
                 RFIDTagInfo res5 = iRfidDevice.singleScan();
                 if (res5 != null) {
-                    Log.d("zzc", "singleScan()===" + res5.getEpcID() + "===" + res5.getOptimizedRSSI());
                     textView.setText(res5.getEpcID());
                 } else {
-                    Log.d("zzc", "singleScan()===" + res5);
                     textView.setText("搜索超时");
                 }
                 break;
@@ -78,14 +77,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 iRfidDevice.startScan(new RFIDCallback() {
                     @Override
                     public void onResponse(RFIDTagInfo rfidTagInfo) {
-                        Log.d("zzc", "startScan()===" + rfidTagInfo.getEpcID());
                         textView.append(rfidTagInfo.getEpcID() + "\n");
                     }
 
                     @SuppressLint("SetTextI18n")
                     @Override
                     public int onError(int reason) {
-                        Log.d("zzc", "startScan()=onError==" + reason);
                         textView.setText("startScan()=onError==" + reason);
                         return 0;
                     }
@@ -93,16 +90,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_stop:
                 iRfidDevice.stopScan();
-                Log.d("zzc", "stopScan()===");
                 break;
             case R.id.btn_read:
                 String data = iRfidDevice.readData(IRfidDevice.RFIDAreaEnum.USER, 0, 6);
                 textView.setText(data);
                 break;
             case R.id.btn_write:
-                boolean res6 = iRfidDevice.writeUser("12345678");
-                Toast.makeText(this, "writeUser(\"12345678\")===" + res6, Toast.LENGTH_SHORT).show();
-                Log.d("zzc", "writeUser===" + res6);
+                String writeData = etUserData.getText().toString();
+                if (writeData.isEmpty()) {
+                    Toast.makeText(this, "请输入内容", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                boolean res6 = iRfidDevice.writeUser(writeData);
+                Toast.makeText(this, "writeUser()===" + res6, Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.btn_power:
+                String power = etPower.getText().toString();
+                if (power.isEmpty()) {
+                    Toast.makeText(this, "请输入内容", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                int p = Integer.parseInt(power);
+                boolean res7 = iRfidDevice.setPower(p);
+                Toast.makeText(this, "setPower()===" + res7, Toast.LENGTH_SHORT).show();
                 break;
             default:
                 break;

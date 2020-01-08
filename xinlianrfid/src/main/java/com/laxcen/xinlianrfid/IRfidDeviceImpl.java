@@ -92,14 +92,13 @@ public class IRfidDeviceImpl implements IRfidDevice {
         return free();
     }
 
-    RFIDCallback mRfidCallback = new RFIDCallback() {
+    private RFIDCallback mRfidCallback = new RFIDCallback() {
         @Override
         public void onResponse(RFIDTagInfo mRfidTagInfo) {
             rfidTagInfo = new RFIDTagInfo();
             rfidTagInfo.setEpcID(mRfidTagInfo.getEpcID());
             rfidTagInfo.setTid(mRfidTagInfo.getTid());
             rfidTagInfo.setOptimizedRSSI(mRfidTagInfo.getOptimizedRSSI());
-            Log.d("zzc", "rfidTagInfo======onResponse=" + mRfidTagInfo.getOptimizedRSSI());
             arrayList.add(rfidTagInfo);
             for (int i = 1; i < arrayList.size(); i++) {
                 if (arrayList.get(i).getOptimizedRSSI() < arrayList.get(i - 1).getOptimizedRSSI()) {
@@ -126,13 +125,12 @@ public class IRfidDeviceImpl implements IRfidDevice {
             arrayList.clear();
         }
         inventory();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
             if (rfidTagInfo != null) {
-                Log.d("zzc", "rfidTagInfo=======" + i);
                 break;
             }
             try {
-                Thread.sleep(100);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -236,14 +234,14 @@ public class IRfidDeviceImpl implements IRfidDevice {
                 default:
                     return null;
             }
-            byte[] rdata = new byte[length];
+            byte[] rdata = new byte[length * 2];
             byte[] rpaswd = new byte[4];
             Mreader.Str2Hex("00000000", 8, rpaswd);
             Reader.READER_ERR er = Reader.READER_ERR.MT_OK_ERR;
             int trycount = 3;
             do {
                 er = Mreader.GetTagData(Rparams.opant,
-                        (char) area, offset / 2, length / 2,
+                        (char) area, offset, length,
                         rdata, rpaswd, (short) Rparams.optime);
                 trycount--;
                 if (trycount < 1) {
@@ -324,7 +322,6 @@ public class IRfidDeviceImpl implements IRfidDevice {
             if (inventory() != 0) {
                 stopScan();
             } else {
-                Log.d(TAG, "run:5555555555555==next");
                 if (handler != null) {
                     handler.postDelayed(this, Rparams.sleep);
                 }
@@ -334,19 +331,14 @@ public class IRfidDeviceImpl implements IRfidDevice {
 
 
     private int inventory() {
-        Log.d(TAG, "run: 1111111111111111111111");
         String tag = null;
         int[] tagcnt = new int[1];
         tagcnt[0] = 0;
         synchronized (this) {
             Reader.READER_ERR er;
-//                int[] uants = Rparams.uants;
-            Log.d(TAG, "run: 2222222222222222222222222222");
             if (nostop) {
-                Log.d(TAG, "run: 2222222222222222222222222222==AsyncGetTagCount==");
                 er = Mreader.AsyncGetTagCount(tagcnt);
             } else {
-                Log.d(TAG, "run: 2222222222222222222222222222==TagInventory_Raw==");
                 er = Mreader.TagInventory_Raw(Rparams.uants,
                         Rparams.uants.length,
                         (short) Rparams.readtime, tagcnt);
@@ -354,13 +346,10 @@ public class IRfidDeviceImpl implements IRfidDevice {
             if (er == Reader.READER_ERR.MT_OK_ERR) {
                 if (tagcnt[0] > 0) {
                     for (int i = 0; i < tagcnt[0]; i++) {
-                        Log.d(TAG, "run: 33333333333");
                         Reader.TAGINFO tfs = Mreader.new TAGINFO();
                         if (nostop) {
-                            Log.d(TAG, "run: 33333333333==AsyncGetNextTag");
                             er = Mreader.AsyncGetNextTag(tfs);
                         } else {
-                            Log.d(TAG, "run: 33333333333==GetNextTag");
                             er = Mreader.GetNextTag(tfs);
                         }
                         if (er == Reader.READER_ERR.MT_OK_ERR) {
@@ -371,7 +360,6 @@ public class IRfidDeviceImpl implements IRfidDevice {
                             if (n_tid != null) {
                                 strDataTemp = StringUtils.byteToHexString(n_tid, n_tid.length);
                             }
-                            Log.d(TAG, "run: 4444444444");
                             int rssi = tfs.RSSI + 100;
                             if (rssi < 0) {
                                 rssi = 0;
@@ -387,7 +375,6 @@ public class IRfidDeviceImpl implements IRfidDevice {
                     }
                 }
             } else {
-                Log.d(TAG, "run: err");
                 int errCode = -1;
                 if (er == Reader.READER_ERR.MT_IO_ERR) {
                     errCode = 1;
