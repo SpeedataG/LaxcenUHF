@@ -1,6 +1,7 @@
 package com.speedata.rfid;
 
 import android.annotation.SuppressLint;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         etPower = findViewById(R.id.et_power);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -65,11 +67,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(this, "free()===" + res4, Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btn_single:
+                long start = System.currentTimeMillis();
                 RFIDTagInfo res5 = iRfidDevice.singleScan();
+                long time = System.currentTimeMillis() - start;
                 if (res5 != null) {
-                    textView.setText(res5.getEpcID());
+                    textView.setText(res5.getEpcID() + "\n" + time + "ms");
                 } else {
-                    textView.setText("搜索超时");
+                    textView.setText("搜索超时\n" + time + "ms");
                 }
                 break;
             case R.id.btn_start:

@@ -1,7 +1,9 @@
 package com.laxcen.xinlianrfid;
 
 
+import android.content.SyncContext;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.serialport.DeviceControlSpd;
 import android.util.Log;
 
@@ -124,16 +126,23 @@ public class IRfidDeviceImpl implements IRfidDevice {
         if (arrayList != null) {
             arrayList.clear();
         }
-        inventory();
-        for (int i = 0; i < 5; i++) {
-            if (rfidTagInfo != null) {
-                break;
+        int i = 0;
+        while (i < 5) {
+            int res = inventory();
+            if (res == 0) {
+                int j = 0;
+                while (j < 3) {
+                    if (rfidTagInfo != null) {
+                        break;
+                    }
+                    j++;
+                    SystemClock.sleep(10);
+                }
+                if (rfidTagInfo != null) {
+                    break;
+                }
             }
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            i++;
         }
         if (arrayList != null && arrayList.size() > 1) {
             selectCard(1, 32, StringUtils.stringToByte(arrayList.get(arrayList.size() - 1).getEpcID()), true);
@@ -334,6 +343,7 @@ public class IRfidDeviceImpl implements IRfidDevice {
         String tag = null;
         int[] tagcnt = new int[1];
         tagcnt[0] = 0;
+        int errCode = -1;
         synchronized (this) {
             Reader.READER_ERR er;
             if (nostop) {
@@ -373,9 +383,9 @@ public class IRfidDeviceImpl implements IRfidDevice {
                             rfidCallback.onResponse(tagInfo);
                         }
                     }
+                    errCode = 0;
                 }
             } else {
-                int errCode = -1;
                 if (er == Reader.READER_ERR.MT_IO_ERR) {
                     errCode = 1;
                 } else if (er == Reader.READER_ERR.MT_INTERNAL_DEV_ERR) {
@@ -420,10 +430,9 @@ public class IRfidDeviceImpl implements IRfidDevice {
                     errCode = 20;
                 }
                 rfidCallback.onError(errCode);
-                return errCode;
             }
         }
-        return 0;
+        return errCode;
     }
 
     private int selectCard(int bank, int addr, byte[] cont, boolean mFlag) {
